@@ -1,0 +1,32 @@
+---
+- name: Configure DevOps server
+  hosts: servers
+  become: true
+
+  tasks:
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+
+    - name: Start and enable Docker
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Install k3s
+      shell: curl -sfL https://get.k3s.io | sh -
+      args:
+        creates: /usr/local/bin/k3s
+
+    - name: Apply Kubernetes deployment
+      shell: kubectl apply -f https://raw.githubusercontent.com/Julien-Dvstr/Devops-FullStack-Lab/main/k8s/deployment.yaml
+
+    - name: Apply Kubernetes service
+      shell: kubectl apply -f https://raw.githubusercontent.com/Julien-Dvstr/Devops-FullStack-Lab/main/k8s/service.yaml
