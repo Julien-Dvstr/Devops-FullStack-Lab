@@ -19,6 +19,11 @@ spec:
           image: prom/prometheus:latest
           ports:
             - containerPort: 9090
+          args:
+            - "--config.file=/etc/prometheus/prometheus.yml"
+          volumeMounts:
+            - name: prometheus-config
+              mountPath: /etc/prometheus
           resources:
             requests:
               memory: "256Mi"
@@ -26,6 +31,10 @@ spec:
             limits:
               memory: "512Mi"
               cpu: "200m"
+      volumes:
+        - name: prometheus-config
+          configMap:
+            name: prometheus-config
 ---
 apiVersion: v1
 kind: Service
