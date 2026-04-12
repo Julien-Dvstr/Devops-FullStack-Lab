@@ -43,7 +43,7 @@ A production-grade DevOps project demonstrating a complete infrastructure stack 
 - ✅ **Phase 2** — Kubernetes (k3s, 2 replicas, rolling updates, self-healing)
 - ✅ **Phase 3** — Infrastructure as Code (Terraform + Ansible)
 - ✅ **Phase 4** — Monitoring (Prometheus + Grafana)
-- 🔄 **Phase 5** — Creative portfolio design
+- ✅ **Phase 5** — Creative portfolio design
 
 ---
 
@@ -153,6 +153,6 @@ Open http://localhost:8080
 
 ## Author
 
-**Julien Devester** — Junior DevOps Engineer
-📧 juliendevesterpro@gmail.com
-🔗 LinkedIn · GitHub
+**Julien Devester** — Junior DevOps Engineer  
+📧 [juliendevesterpro@gmail.com](mailto:juliendevesterpro@gmail.com)  
+🔗 [LinkedIn](https://linkedin.com/in/juliendevester) · [GitHub](https://github.com/Julien-Dvstr)

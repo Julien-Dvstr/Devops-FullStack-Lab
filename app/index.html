@@ -4,72 +4,805 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Julien Devester — DevOps Engineer</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #080c0f;
+            --surface: #0d1318;
+            --border: #1a2530;
+            --green: #00e5a0;
+            --green-dim: #00e5a022;
+            --cyan: #00c8e0;
+            --text: #c8d8e8;
+            --muted: #4a6070;
+            --white: #eaf4ff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Space Mono', monospace;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* Grain overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 999;
+            opacity: 0.4;
+        }
+
+        /* Scanlines */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0,0,0,0.03) 2px,
+                rgba(0,0,0,0.03) 4px
+            );
+            pointer-events: none;
+            z-index: 998;
+        }
+
+        /* NAV */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 48px;
+            background: linear-gradient(to bottom, var(--bg) 60%, transparent);
+        }
+
+        .nav-logo {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1rem;
+            color: var(--green);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover { color: var(--green); }
+
+        /* HERO */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 120px 48px 80px;
+            position: relative;
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 60% 50% at 80% 50%, rgba(0,229,160,0.05) 0%, transparent 70%),
+                radial-gradient(ellipse 40% 40% at 20% 80%, rgba(0,200,224,0.04) 0%, transparent 60%);
+        }
+
+        .hero-content {
+            position: relative;
+            max-width: 900px;
+        }
+
+        .hero-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--green);
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 32px;
+        }
+
+        .hero-label::before {
+            content: '';
+            width: 32px;
+            height: 1px;
+            background: var(--green);
+        }
+
+        h1 {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: clamp(3rem, 8vw, 7rem);
+            line-height: 0.95;
+            color: var(--white);
+            letter-spacing: -0.02em;
+            margin-bottom: 32px;
+        }
+
+        h1 span {
+            color: transparent;
+            -webkit-text-stroke: 1px var(--green);
+        }
+
+        .hero-desc {
+            font-size: 0.9rem;
+            color: var(--muted);
+            max-width: 500px;
+            margin-bottom: 48px;
+            line-height: 1.8;
+        }
+
+        .hero-links {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            text-decoration: none;
+            border-radius: 2px;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--green);
+            color: var(--bg);
+            font-weight: 700;
+        }
+
+        .btn-primary:hover {
+            background: var(--cyan);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            border: 1px solid var(--border);
+            color: var(--muted);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--green);
+            color: var(--green);
+        }
+
+        /* TERMINAL CURSOR */
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 1.1em;
+            background: var(--green);
+            vertical-align: text-bottom;
+            animation: blink 1s step-end infinite;
+            margin-left: 4px;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* SECTION */
+        section {
+            padding: 100px 48px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 64px;
+        }
+
+        .section-num {
+            font-size: 0.7rem;
+            color: var(--green);
+            letter-spacing: 0.2em;
+        }
+
+        .section-title {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 2rem;
+            color: var(--white);
+        }
+
+        .section-line {
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+            max-width: 200px;
+        }
+
+        /* ABOUT */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 64px;
+            align-items: start;
+        }
+
+        .about-text {
+            font-size: 0.9rem;
+            color: var(--text);
+            line-height: 1.9;
+        }
+
+        .about-text p + p { margin-top: 16px; }
+
+        .about-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+        }
+
+        .stat {
+            background: var(--surface);
+            padding: 28px 24px;
+        }
+
+        .stat-value {
+            font-family: 'Syne', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--green);
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--muted);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        /* SKILLS */
+        .skills-terminal {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .terminal-bar {
+            background: var(--border);
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        .dot-red { background: #ff5f56; }
+        .dot-yellow { background: #ffbd2e; }
+        .dot-green { background: #27c93f; }
+
+        .terminal-title {
+            margin-left: 8px;
+            font-size: 0.7rem;
+            color: var(--muted);
+        }
+
+        .terminal-body {
+            padding: 32px;
+        }
+
+        .cmd-line {
+            margin-bottom: 24px;
+        }
+
+        .cmd-prompt {
+            color: var(--green);
+            margin-right: 8px;
+        }
+
+        .cmd-text {
+            color: var(--cyan);
+        }
+
+        .skills-output {
+            margin-top: 16px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 8px;
+        }
+
+        .skill-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            background: var(--green-dim);
+            border: 1px solid rgba(0,229,160,0.15);
+            border-radius: 2px;
+            font-size: 0.75rem;
+            color: var(--text);
+            transition: border-color 0.2s, color 0.2s;
+        }
+
+        .skill-item:hover {
+            border-color: var(--green);
+            color: var(--green);
+        }
+
+        .skill-item::before {
+            content: '→';
+            color: var(--green);
+            font-size: 0.7rem;
+        }
+
+        /* PROJECTS */
+        .project-card {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            overflow: hidden;
+            transition: border-color 0.3s;
+        }
+
+        .project-card:hover {
+            border-color: var(--green);
+        }
+
+        .project-info {
+            padding: 48px;
+            border-right: 1px solid var(--border);
+        }
+
+        .project-badge {
+            display: inline-block;
+            font-size: 0.65rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--green);
+            border: 1px solid var(--green);
+            padding: 3px 10px;
+            margin-bottom: 24px;
+        }
+
+        .project-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--white);
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .project-desc {
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin-bottom: 32px;
+            line-height: 1.8;
+        }
+
+        .project-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 32px;
+        }
+
+        .tag {
+            font-size: 0.7rem;
+            color: var(--cyan);
+            border: 1px solid rgba(0,200,224,0.2);
+            padding: 3px 10px;
+        }
+
+        .project-link {
+            color: var(--green);
+            text-decoration: none;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: gap 0.2s;
+        }
+
+        .project-link:hover { gap: 14px; }
+
+        .project-phases {
+            padding: 48px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .phase {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px;
+            border: 1px solid var(--border);
+            font-size: 0.78rem;
+        }
+
+        .phase.done { border-color: rgba(0,229,160,0.2); }
+        .phase.wip { border-color: rgba(0,200,224,0.1); }
+
+        .phase-icon {
+            font-size: 0.7rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .phase.done .phase-icon { color: var(--green); }
+        .phase.wip .phase-icon { color: var(--muted); }
+
+        .phase-text { color: var(--text); }
+        .phase.wip .phase-text { color: var(--muted); }
+
+        /* CONTACT */
+        .contact-wrap {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 64px;
+            align-items: center;
+        }
+
+        .contact-text h3 {
+            font-family: 'Syne', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--white);
+            line-height: 1.1;
+            margin-bottom: 24px;
+        }
+
+        .contact-text h3 span { color: var(--green); }
+
+        .contact-text p {
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin-bottom: 32px;
+            line-height: 1.8;
+        }
+
+        .contact-details {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 20px 24px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            text-decoration: none;
+            color: var(--text);
+            font-size: 0.82rem;
+            transition: border-color 0.2s, color 0.2s;
+        }
+
+        .contact-item:hover {
+            border-color: var(--green);
+            color: var(--green);
+        }
+
+        .contact-item-icon {
+            color: var(--green);
+            font-size: 0.8rem;
+            width: 20px;
+        }
+
+        .contact-item-label {
+            font-size: 0.65rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        /* FOOTER */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 32px 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.72rem;
+            color: var(--muted);
+        }
+
+        /* ANIMATIONS */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            nav { padding: 20px 24px; }
+            .nav-links { display: none; }
+            .hero { padding: 100px 24px 60px; }
+            section { padding: 60px 24px; }
+            h1 { font-size: 3rem; }
+            .about-grid { grid-template-columns: 1fr; gap: 40px; }
+            .project-card { grid-template-columns: 1fr; }
+            .project-info { border-right: none; border-bottom: 1px solid var(--border); }
+            .contact-wrap { grid-template-columns: 1fr; }
+            footer { flex-direction: column; gap: 12px; text-align: center; }
+        }
+    </style>
 </head>
 <body>
 
-    <header>
-        <h1>Julien Devester</h1>
-        <p class="title">Junior DevOps Engineer</p>
-        <div class="links">
-            <a href="mailto:juliendevesterpro@gmail.com">Email</a>
-            <a href="https://github.com/Julien-Dvstr" target="_blank">GitHub</a>
-            <a href="https://linkedin.com/in/juliendevester" target="_blank">LinkedIn</a>
+    <nav>
+        <div class="nav-logo">JD_</div>
+        <ul class="nav-links">
+            <li><a href="#about">About</a></li>
+            <li><a href="#skills">Skills</a></li>
+            <li><a href="#projects">Projects</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- HERO -->
+    <div class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-content">
+            <div class="hero-label">Available for hire</div>
+            <h1>Julien<br><span>Devester</span></h1>
+            <p class="hero-desc">
+                Junior DevOps Engineer building production-grade infrastructure.<br>
+                CI/CD · Kubernetes · IaC · Monitoring<span class="cursor"></span>
+            </p>
+            <div class="hero-links">
+                <a href="mailto:juliendevesterpro@gmail.com" class="btn btn-primary">Get in touch</a>
+                <a href="https://github.com/Julien-Dvstr" target="_blank" class="btn btn-secondary">GitHub</a>
+                <a href="https://linkedin.com/in/juliendevester" target="_blank" class="btn btn-secondary">LinkedIn</a>
+            </div>
         </div>
-    </header>
+    </div>
 
-    <main>
-
-        <section id="about">
-            <h2>About</h2>
-            <p>DevOps engineer in training at Technifutur (Liège, Belgium), self-studying a complete DevOps stack through KodeKloud. Passionate about automation, infrastructure as code, and building reliable pipelines.</p>
-        </section>
-
-        <section id="skills">
-            <h2>Technical Skills</h2>
-            <div class="skills-grid">
-                <span>Docker</span>
-                <span>Kubernetes</span>
-                <span>Jenkins</span>
-                <span>GitLab CI/CD</span>
-                <span>GitHub Actions</span>
-                <span>Ansible</span>
-                <span>Terraform</span>
-                <span>Linux</span>
-                <span>Bash</span>
-                <span>Python</span>
-                <span>Prometheus</span>
-                <span>Grafana</span>
+    <!-- ABOUT -->
+    <section id="about">
+        <div class="section-header fade-in">
+            <span class="section-num">01 /</span>
+            <h2 class="section-title">About</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="about-grid fade-in">
+            <div class="about-text">
+                <p>
+                    DevOps engineer in training at Technifutur (Liège, Belgium), self-studying a complete DevOps stack through KodeKloud while building real infrastructure projects.
+                </p>
+                <p>
+                    Background in graphic design and game development — I bring both creative precision and engineering rigor to every system I build.
+                </p>
+                <p>
+                    Open to DevOps Engineer positions in Belgium, Switzerland, Netherlands, Luxembourg, Japan, or Full-Remote. Fast learner, autonomous, obsessed with automation.
+                </p>
             </div>
-        </section>
-
-        <section id="projects">
-            <h2>Projects</h2>
-            <div class="project-card">
-                <h3>DevOps Fullstack Lab</h3>
-                <p>Full DevOps pipeline — CI/CD, Docker, Kubernetes, IaC, Monitoring.</p>
-                <div class="tags">
-                    <span>Docker</span>
-                    <span>GitHub Actions</span>
-                    <span>Kubernetes</span>
-                    <span>Terraform</span>
-                    <span>Prometheus</span>
+            <div class="about-stats">
+                <div class="stat">
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">Live project</div>
                 </div>
-                <a href="https://github.com/Julien-Dvstr/devops-fullstack-lab" target="_blank">View on GitHub →</a>
+                <div class="stat">
+                    <div class="stat-value">B2</div>
+                    <div class="stat-label">English level</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">0</div>
+                    <div class="stat-label">Downtime tolerance</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">∞</div>
+                    <div class="stat-label">Curiosity</div>
+                </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <section id="contact">
-            <h2>Contact</h2>
-            <p>Open to DevOps Engineer positions in Belgium, Switzerland, Netherlands, Luxembourg, Japan or Full-Remote.</p>
-            <a href="mailto:juliendevesterpro@gmail.com" class="cta">Get in touch</a>
-        </section>
+    <!-- SKILLS -->
+    <section id="skills">
+        <div class="section-header fade-in">
+            <span class="section-num">02 /</span>
+            <h2 class="section-title">Skills</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="skills-terminal fade-in">
+            <div class="terminal-bar">
+                <div class="dot dot-red"></div>
+                <div class="dot dot-yellow"></div>
+                <div class="dot dot-green"></div>
+                <span class="terminal-title">julien@devops ~ skills --list</span>
+            </div>
+            <div class="terminal-body">
+                <div class="cmd-line">
+                    <span class="cmd-prompt">$</span>
+                    <span class="cmd-text">cat technical_stack.txt</span>
+                </div>
+                <div class="skills-output">
+                    <div class="skill-item">Docker</div>
+                    <div class="skill-item">Kubernetes</div>
+                    <div class="skill-item">GitHub Actions</div>
+                    <div class="skill-item">Jenkins</div>
+                    <div class="skill-item">GitLab CI/CD</div>
+                    <div class="skill-item">Terraform</div>
+                    <div class="skill-item">Ansible</div>
+                    <div class="skill-item">Prometheus</div>
+                    <div class="skill-item">Grafana</div>
+                    <div class="skill-item">Linux</div>
+                    <div class="skill-item">Bash / Shell</div>
+                    <div class="skill-item">Python</div>
+                    <div class="skill-item">Nginx</div>
+                    <div class="skill-item">Git</div>
+                    <div class="skill-item">Azure</div>
+                    <div class="skill-item">TCP/IP · DNS</div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    </main>
+    <!-- PROJECTS -->
+    <section id="projects">
+        <div class="section-header fade-in">
+            <span class="section-num">03 /</span>
+            <h2 class="section-title">Projects</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="project-card fade-in">
+            <div class="project-info">
+                <span class="project-badge">Production</span>
+                <h3 class="project-title">DevOps Fullstack Lab</h3>
+                <p class="project-desc">
+                    End-to-end DevOps infrastructure — from CI/CD pipeline to Kubernetes orchestration, Infrastructure as Code, and real-time monitoring. Deployed on DigitalOcean Frankfurt.
+                </p>
+                <div class="project-tags">
+                    <span class="tag">Docker</span>
+                    <span class="tag">GitHub Actions</span>
+                    <span class="tag">Kubernetes</span>
+                    <span class="tag">Terraform</span>
+                    <span class="tag">Ansible</span>
+                    <span class="tag">Prometheus</span>
+                    <span class="tag">Grafana</span>
+                </div>
+                <a href="https://github.com/Julien-Dvstr/Devops-FullStack-Lab" target="_blank" class="project-link">
+                    View on GitHub →
+                </a>
+            </div>
+            <div class="project-phases">
+                <div class="phase done">
+                    <span class="phase-icon">✓</span>
+                    <span class="phase-text">Phase 1 — CI/CD Pipeline</span>
+                </div>
+                <div class="phase done">
+                    <span class="phase-icon">✓</span>
+                    <span class="phase-text">Phase 2 — Kubernetes (k3s)</span>
+                </div>
+                <div class="phase done">
+                    <span class="phase-icon">✓</span>
+                    <span class="phase-text">Phase 3 — Terraform + Ansible</span>
+                </div>
+                <div class="phase done">
+                    <span class="phase-icon">✓</span>
+                    <span class="phase-text">Phase 4 — Prometheus + Grafana</span>
+                </div>
+                <div class="phase done">
+                    <span class="phase-icon">✓</span>
+                    <span class="phase-text">Phase 5 — Creative Design</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact">
+        <div class="section-header fade-in">
+            <span class="section-num">04 /</span>
+            <h2 class="section-title">Contact</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="contact-wrap fade-in">
+            <div class="contact-text">
+                <h3>Let's build<br><span>something.</span></h3>
+                <p>Open to DevOps Engineer positions in Belgium, Switzerland, Netherlands, Luxembourg, Japan, or full remote. Available from July 2026.</p>
+            </div>
+            <div class="contact-details">
+                <a href="mailto:juliendevesterpro@gmail.com" class="contact-item">
+                    <span class="contact-item-icon">@</span>
+                    <div>
+                        <span class="contact-item-label">Email</span>
+                        juliendevesterpro@gmail.com
+                    </div>
+                </a>
+                <a href="https://linkedin.com/in/juliendevester" target="_blank" class="contact-item">
+                    <span class="contact-item-icon">in</span>
+                    <div>
+                        <span class="contact-item-label">LinkedIn</span>
+                        juliendevester
+                    </div>
+                </a>
+                <a href="https://github.com/Julien-Dvstr" target="_blank" class="contact-item">
+                    <span class="contact-item-icon">gh</span>
+                    <div>
+                        <span class="contact-item-label">GitHub</span>
+                        Julien-Dvstr
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
 
     <footer>
-        <p>Julien Devester © 2026 — Deployed via Docker + GitHub Actions + DigitalOcean</p>
+        <span>Julien Devester © 2026</span>
+        <span>Deployed via Docker · GitHub Actions · Kubernetes · DigitalOcean</span>
     </footer>
+
+    <script>
+        // Fade in on scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    </script>
 
 </body>
 </html>
