@@ -2,7 +2,7 @@
 
 A production-grade DevOps project demonstrating a complete infrastructure stack — from CI/CD pipeline to Kubernetes orchestration, Infrastructure as Code, and real-time monitoring.
 
-🌍 **Live**: http://207.154.247.83:30080
+🌍 **Live**: https://juliendvstr.dev
 
 ---
 
@@ -19,6 +19,8 @@ A production-grade DevOps project demonstrating a complete infrastructure stack 
     Kubernetes Rolling Update (k3s)
         ↓
     Portfolio served by Nginx (2 replicas)
+        ↓
+    Traefik Ingress → juliendvstr.dev (HTTPS via Cloudflare)
 
 ---
 
@@ -31,8 +33,10 @@ A production-grade DevOps project demonstrating a complete infrastructure stack 
 | Registry | Docker Hub |
 | CI/CD | GitHub Actions |
 | Orchestration | Kubernetes (k3s) |
+| Ingress | Traefik |
 | IaC | Terraform + Ansible |
 | Monitoring | Prometheus + Grafana |
+| DNS & HTTPS | Cloudflare |
 | Cloud | DigitalOcean (Frankfurt) |
 
 ---
@@ -44,6 +48,7 @@ A production-grade DevOps project demonstrating a complete infrastructure stack 
 - ✅ **Phase 3** — Infrastructure as Code (Terraform + Ansible)
 - ✅ **Phase 4** — Monitoring (Prometheus + Grafana)
 - ✅ **Phase 5** — Creative portfolio design
+- ✅ **Phase 6** — Domain + HTTPS (Cloudflare + Traefik Ingress)
 
 ---
 
@@ -56,6 +61,7 @@ A production-grade DevOps project demonstrating a complete infrastructure stack 
     ├── k8s/
     │   ├── deployment.yaml         # Kubernetes deployment (2 replicas)
     │   ├── service.yaml            # NodePort service
+    │   ├── ingress.yaml            # Traefik ingress (juliendvstr.dev)
     │   ├── prometheus.yaml         # Prometheus deployment
     │   ├── prometheus-config.yaml  # Prometheus scrape config
     │   ├── grafana.yaml            # Grafana deployment
@@ -95,12 +101,13 @@ The portfolio runs on a k3s cluster with:
 - **2 replicas** — high availability, traffic distributed across pods
 - **Self-healing** — crashed pods are automatically restarted
 - **Rolling updates** — new versions deployed without downtime
-- **NodePort service** — traffic exposed on port 30080
+- **Traefik Ingress** — routes juliendvstr.dev to the portfolio service
 
 Deploy manually:
 
     kubectl apply -f k8s/deployment.yaml
     kubectl apply -f k8s/service.yaml
+    kubectl apply -f k8s/ingress.yaml
 
 Check pods:
 
@@ -140,6 +147,15 @@ Grafana dashboard: **Node Exporter Full** (ID: 1860)
 
 ---
 
+## Phase 6 — Domain + HTTPS
+
+- Domain `juliendvstr.dev` registered via OVH
+- DNS managed by Cloudflare (free plan)
+- HTTPS certificate issued automatically by Cloudflare
+- Traefik ingress routes HTTP and HTTPS traffic to the portfolio service
+
+---
+
 ## Run Locally
 
     git clone https://github.com/Julien-Dvstr/Devops-FullStack-Lab.git
@@ -154,5 +170,6 @@ Open http://localhost:8080
 ## Author
 
 **Julien Devester** — Junior DevOps Engineer  
+🌍 [juliendvstr.dev](https://juliendvstr.dev)  
 📧 [juliendevesterpro@gmail.com](mailto:juliendevesterpro@gmail.com)  
 🔗 [LinkedIn](https://linkedin.com/in/juliendevester) · [GitHub](https://github.com/Julien-Dvstr)
