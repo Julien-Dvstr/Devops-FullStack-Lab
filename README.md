@@ -136,7 +136,7 @@ If the server is ever destroyed, one command rebuilds the entire configuration f
 | Tool | URL | Credentials |
 |---|---|---|
 | Prometheus | http://207.154.247.83:30090 | — |
-| Grafana | http://207.154.247.83:30030 | admin / devops2026 |
+| Grafana | http://207.154.247.83:30030 | credentials on request |
 
 Prometheus scrapes metrics from:
 - `node-exporter` — server CPU, RAM, disk, network
