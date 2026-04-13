@@ -8,538 +8,156 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #080c0f;
-            --surface: #0d1318;
-            --border: #1a2530;
-            --green: #00e5a0;
-            --green-dim: #00e5a022;
-            --cyan: #00c8e0;
-            --text: #c8d8e8;
-            --muted: #4a6070;
-            --white: #eaf4ff;
+            --bg: #080c0f; --surface: #0d1318; --border: #1a2530;
+            --green: #00e5a0; --green-dim: #00e5a022; --cyan: #00c8e0;
+            --text: #c8d8e8; --muted: #4a6070; --white: #eaf4ff;
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
-
-        body {
-            font-family: 'Space Mono', monospace;
-            background: var(--bg);
-            color: var(--text);
-            line-height: 1.7;
-            overflow-x: hidden;
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-            pointer-events: none;
-            z-index: 999;
-            opacity: 0.4;
-        }
-
-        body::after {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
-            pointer-events: none;
-            z-index: 998;
-        }
-
-        /* NAV */
-        nav {
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            z-index: 100;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 48px;
-            background: linear-gradient(to bottom, var(--bg) 60%, transparent);
-        }
-
-        .nav-logo {
-            font-family: 'Syne', sans-serif;
-            font-weight: 800;
-            font-size: 1rem;
-            color: var(--green);
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            text-decoration: none;
-        }
-
+        body { font-family: 'Space Mono', monospace; background: var(--bg); color: var(--text); line-height: 1.7; overflow-x: hidden; }
+        body::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events: none; z-index: 999; opacity: 0.4; }
+        body::after { content: ''; position: fixed; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px); pointer-events: none; z-index: 998; }
+        #particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+        nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 20px 48px; background: linear-gradient(to bottom, var(--bg) 60%, transparent); transition: background 0.3s; }
+        nav.scrolled { background: rgba(8,12,15,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+        .nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem; color: var(--green); letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; }
         .nav-links { display: flex; gap: 32px; list-style: none; }
-
-        .nav-links a {
-            color: var(--muted);
-            text-decoration: none;
-            font-size: 0.75rem;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            transition: color 0.2s;
-        }
-
+        .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; transition: color 0.2s; position: relative; }
+        .nav-links a::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 0; height: 1px; background: var(--green); transition: width 0.3s; }
         .nav-links a:hover { color: var(--green); }
-
-        .hamburger {
-            display: none;
-            flex-direction: column;
-            gap: 5px;
-            cursor: pointer;
-            padding: 4px;
-            background: none;
-            border: none;
-        }
-
-        .hamburger span {
-            display: block;
-            width: 24px;
-            height: 2px;
-            background: var(--green);
-            transition: all 0.3s;
-        }
-
+        .nav-links a:hover::after { width: 100%; }
+        .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; background: none; border: none; }
+        .hamburger span { display: block; width: 24px; height: 2px; background: var(--green); transition: all 0.3s; }
         .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
         .hamburger.open span:nth-child(2) { opacity: 0; }
         .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
-
-        .mobile-menu {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: var(--bg);
-            z-index: 99;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 40px;
-        }
-
+        .mobile-menu { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 99; flex-direction: column; align-items: center; justify-content: center; gap: 40px; }
         .mobile-menu.open { display: flex; }
-
-        .mobile-menu a {
-            color: var(--white);
-            text-decoration: none;
-            font-family: 'Syne', sans-serif;
-            font-size: 2rem;
-            font-weight: 800;
-            transition: color 0.2s;
-        }
-
+        .mobile-menu a { color: var(--white); text-decoration: none; font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; transition: color 0.2s; }
         .mobile-menu a:hover { color: var(--green); }
-
-        /* HERO */
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            padding: 120px 48px 80px;
-            position: relative;
-        }
-
-        .hero-bg {
-            position: absolute; inset: 0;
-            background:
-                radial-gradient(ellipse 60% 50% at 80% 50%, rgba(0,229,160,0.05) 0%, transparent 70%),
-                radial-gradient(ellipse 40% 40% at 20% 80%, rgba(0,200,224,0.04) 0%, transparent 60%);
-        }
-
+        .hero { min-height: 100vh; display: flex; align-items: center; padding: 120px 48px 80px; position: relative; z-index: 1; }
+        .hero-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 50% at 80% 50%, rgba(0,229,160,0.05) 0%, transparent 70%), radial-gradient(ellipse 40% 40% at 20% 80%, rgba(0,200,224,0.04) 0%, transparent 60%); }
         .hero-content { position: relative; max-width: 900px; }
-
-        .hero-label {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--green);
-            font-size: 0.75rem;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            margin-bottom: 32px;
-        }
-
+        .hero-label { display: inline-flex; align-items: center; gap: 10px; color: var(--green); font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 32px; opacity: 0; animation: fadeSlideUp 0.6s ease 0.2s forwards; }
         .hero-label::before { content: ''; width: 32px; height: 1px; background: var(--green); }
-
-        h1 {
-            font-family: 'Syne', sans-serif;
-            font-weight: 800;
-            font-size: clamp(3rem, 8vw, 7rem);
-            line-height: 0.95;
-            color: var(--white);
-            letter-spacing: -0.02em;
-            margin-bottom: 32px;
-        }
-
+        h1 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(3rem, 8vw, 7rem); line-height: 0.95; color: var(--white); letter-spacing: -0.02em; margin-bottom: 32px; opacity: 0; animation: fadeSlideUp 0.6s ease 0.4s forwards; }
         h1 span { color: transparent; -webkit-text-stroke: 1px var(--green); }
-
-        .hero-desc {
-            font-size: 0.9rem;
-            color: var(--muted);
-            max-width: 500px;
-            margin-bottom: 48px;
-            line-height: 1.8;
-        }
-
-        .hero-links { display: flex; gap: 16px; flex-wrap: wrap; }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 12px 24px;
-            font-family: 'Space Mono', monospace;
-            font-size: 0.75rem;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            text-decoration: none;
-            border-radius: 2px;
-            transition: all 0.2s;
-        }
-
-        .btn-primary { background: var(--green); color: var(--bg); font-weight: 700; }
-        .btn-primary:hover { background: var(--cyan); transform: translateY(-2px); }
-        .btn-secondary { border: 1px solid var(--border); color: var(--muted); }
-        .btn-secondary:hover { border-color: var(--green); color: var(--green); }
-
-        .cursor {
-            display: inline-block;
-            width: 10px; height: 1.1em;
-            background: var(--green);
-            vertical-align: text-bottom;
-            animation: blink 1s step-end infinite;
-            margin-left: 4px;
-        }
-
+        .hero-desc { font-size: 0.9rem; color: var(--muted); max-width: 500px; margin-bottom: 48px; line-height: 1.8; opacity: 0; animation: fadeSlideUp 0.6s ease 0.6s forwards; }
+        .hero-links { display: flex; gap: 16px; flex-wrap: wrap; opacity: 0; animation: fadeSlideUp 0.6s ease 0.8s forwards; }
+        @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+        .cursor { display: inline-block; width: 10px; height: 1.1em; background: var(--green); vertical-align: text-bottom; animation: blink 1s step-end infinite; margin-left: 2px; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-
-        section {
-            padding: 100px 48px;
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; font-family: 'Space Mono', monospace; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; border-radius: 2px; transition: all 0.25s; }
+        .btn-primary { background: var(--green); color: var(--bg); font-weight: 700; }
+        .btn-primary:hover { background: var(--cyan); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,229,160,0.2); }
+        .btn-secondary { border: 1px solid var(--border); color: var(--muted); }
+        .btn-secondary:hover { border-color: var(--green); color: var(--green); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,229,160,0.1); }
+        section { padding: 100px 48px; max-width: 1100px; margin: 0 auto; position: relative; z-index: 1; }
         .section-header { display: flex; align-items: center; gap: 16px; margin-bottom: 64px; }
         .section-num { font-size: 0.7rem; color: var(--green); letter-spacing: 0.2em; }
-
-        .section-title {
-            font-family: 'Syne', sans-serif;
-            font-weight: 700;
-            font-size: 2rem;
-            color: var(--white);
-        }
-
+        .section-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 2rem; color: var(--white); }
         .section-line { flex: 1; height: 1px; background: var(--border); max-width: 200px; }
-
-        /* ABOUT */
+        .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1); }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
         .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
         .about-text { font-size: 0.9rem; color: var(--text); line-height: 1.9; }
         .about-text p + p { margin-top: 16px; }
-
-        .about-stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1px;
-            background: var(--border);
-            border: 1px solid var(--border);
-        }
-
-        .stat { background: var(--surface); padding: 28px 24px; }
-
-        .stat-value {
-            font-family: 'Syne', sans-serif;
-            font-size: 2.2rem;
-            font-weight: 800;
-            color: var(--green);
-            line-height: 1;
-            margin-bottom: 6px;
-        }
-
+        .about-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); }
+        .stat { background: var(--surface); padding: 28px 24px; transition: background 0.3s; cursor: default; }
+        .stat:hover { background: #111920; }
+        .stat-value { font-family: 'Syne', sans-serif; font-size: 2.2rem; font-weight: 800; color: var(--green); line-height: 1; margin-bottom: 6px; }
         .stat-label { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
-
-        /* EXPERIENCE */
         .experience-list { display: flex; flex-direction: column; border: 1px solid var(--border); }
-
-        .exp-item {
-            display: grid;
-            grid-template-columns: 200px 1fr;
-            border-bottom: 1px solid var(--border);
-            transition: background 0.2s;
-        }
-
+        .exp-item { display: grid; grid-template-columns: 200px 1fr; border-bottom: 1px solid var(--border); transition: background 0.3s, border-left 0.3s; border-left: 3px solid transparent; }
         .exp-item:last-child { border-bottom: none; }
-        .exp-item:hover { background: var(--surface); }
-
-        .exp-date {
-            padding: 28px 24px;
-            border-right: 1px solid var(--border);
-            font-size: 0.72rem;
-            color: var(--muted);
-            line-height: 1.6;
-        }
-
-        .exp-date span {
-            display: block;
-            color: var(--green);
-            font-size: 0.65rem;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            margin-bottom: 4px;
-        }
-
+        .exp-item:hover { background: var(--surface); border-left-color: var(--green); }
+        .exp-date { padding: 28px 24px; border-right: 1px solid var(--border); font-size: 0.72rem; color: var(--muted); line-height: 1.6; }
+        .exp-date span { display: block; color: var(--green); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px; }
         .exp-content { padding: 28px 32px; }
-
-        .exp-title {
-            font-family: 'Syne', sans-serif;
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--white);
-            margin-bottom: 4px;
-        }
-
+        .exp-title { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; color: var(--white); margin-bottom: 4px; }
         .exp-org { font-size: 0.72rem; color: var(--green); letter-spacing: 0.05em; margin-bottom: 12px; }
         .exp-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.8; }
-
         .exp-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
-
-        .exp-tag {
-            font-size: 0.65rem;
-            color: var(--cyan);
-            border: 1px solid rgba(0,200,224,0.2);
-            padding: 2px 8px;
-        }
-
-        /* SKILLS */
-        .skills-terminal { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
-
+        .exp-tag { font-size: 0.65rem; color: var(--cyan); border: 1px solid rgba(0,200,224,0.2); padding: 2px 8px; transition: border-color 0.2s; }
+        .exp-item:hover .exp-tag { border-color: rgba(0,200,224,0.4); }
+        .skills-terminal { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; transition: border-color 0.3s; }
+        .skills-terminal:hover { border-color: rgba(0,229,160,0.3); }
         .terminal-bar { background: var(--border); padding: 10px 16px; display: flex; align-items: center; gap: 8px; }
         .dot { width: 10px; height: 10px; border-radius: 50%; }
-        .dot-red { background: #ff5f56; }
-        .dot-yellow { background: #ffbd2e; }
-        .dot-green { background: #27c93f; }
+        .dot-red { background: #ff5f56; } .dot-yellow { background: #ffbd2e; } .dot-green { background: #27c93f; }
         .terminal-title { margin-left: 8px; font-size: 0.7rem; color: var(--muted); }
         .terminal-body { padding: 32px; }
         .cmd-line { margin-bottom: 24px; }
         .cmd-prompt { color: var(--green); margin-right: 8px; }
         .cmd-text { color: var(--cyan); }
-
-        .skills-output {
-            margin-top: 16px;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 8px;
-        }
-
-        .skill-item {
-            display: flex; align-items: center; gap: 8px;
-            padding: 10px 14px;
-            background: var(--green-dim);
-            border: 1px solid rgba(0,229,160,0.15);
-            border-radius: 2px;
-            font-size: 0.75rem;
-            color: var(--text);
-            transition: border-color 0.2s, color 0.2s;
-        }
-
-        .skill-item:hover { border-color: var(--green); color: var(--green); }
+        .skills-output { margin-top: 16px; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; }
+        .skill-item { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: var(--green-dim); border: 1px solid rgba(0,229,160,0.15); border-radius: 2px; font-size: 0.75rem; color: var(--text); transition: all 0.25s; cursor: default; }
+        .skill-item:hover { border-color: var(--green); color: var(--green); background: rgba(0,229,160,0.08); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,229,160,0.1); }
         .skill-item::before { content: '→'; color: var(--green); font-size: 0.7rem; }
-
-        /* PROJECTS */
-        .project-card {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            border: 1px solid var(--border);
-            background: var(--surface);
-            overflow: hidden;
-            transition: border-color 0.3s;
-        }
-
-        .project-card:hover { border-color: var(--green); }
+        .project-card { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--border); background: var(--surface); overflow: hidden; transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s; }
+        .project-card:hover { border-color: var(--green); box-shadow: 0 0 40px rgba(0,229,160,0.08); transform: translateY(-4px); }
         .project-info { padding: 48px; border-right: 1px solid var(--border); }
-
-        .project-badge {
-            display: inline-block;
-            font-size: 0.65rem;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            color: var(--green);
-            border: 1px solid var(--green);
-            padding: 3px 10px;
-            margin-bottom: 24px;
-        }
-
-        .project-title {
-            font-family: 'Syne', sans-serif;
-            font-size: 1.6rem;
-            font-weight: 800;
-            color: var(--white);
-            margin-bottom: 16px;
-            line-height: 1.2;
-        }
-
+        .project-badge { display: inline-block; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--green); border: 1px solid var(--green); padding: 3px 10px; margin-bottom: 24px; }
+        .project-title { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; color: var(--white); margin-bottom: 16px; line-height: 1.2; }
         .project-desc { font-size: 0.85rem; color: var(--muted); margin-bottom: 32px; line-height: 1.8; }
         .project-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 32px; }
-
-        .tag { font-size: 0.7rem; color: var(--cyan); border: 1px solid rgba(0,200,224,0.2); padding: 3px 10px; }
-
+        .tag { font-size: 0.7rem; color: var(--cyan); border: 1px solid rgba(0,200,224,0.2); padding: 3px 10px; transition: all 0.2s; }
+        .tag:hover { border-color: var(--cyan); background: rgba(0,200,224,0.05); }
         .project-links { display: flex; flex-wrap: wrap; gap: 16px; }
-
-        .project-link {
-            color: var(--green);
-            text-decoration: none;
-            font-size: 0.75rem;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: gap 0.2s;
-        }
-
+        .project-link { color: var(--green); text-decoration: none; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; display: inline-flex; align-items: center; gap: 8px; transition: gap 0.2s; }
         .project-link:hover { gap: 14px; }
-
         .project-phases { padding: 48px; display: flex; flex-direction: column; gap: 16px; }
-
-        .phase {
-            display: flex; align-items: center; gap: 14px;
-            padding: 16px;
-            border: 1px solid var(--border);
-            font-size: 0.78rem;
-        }
-
+        .phase { display: flex; align-items: center; gap: 14px; padding: 16px; border: 1px solid var(--border); font-size: 0.78rem; transition: all 0.25s; }
         .phase.done { border-color: rgba(0,229,160,0.2); }
+        .phase.done:hover { border-color: var(--green); background: rgba(0,229,160,0.04); transform: translateX(4px); }
         .phase-icon { font-size: 0.7rem; width: 20px; text-align: center; }
         .phase.done .phase-icon { color: var(--green); }
         .phase-text { color: var(--text); }
-
-        /* CONTACT */
         .contact-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
-
-        .contact-text h3 {
-            font-family: 'Syne', sans-serif;
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: var(--white);
-            line-height: 1.1;
-            margin-bottom: 24px;
-        }
-
+        .contact-text h3 { font-family: 'Syne', sans-serif; font-size: 2.5rem; font-weight: 800; color: var(--white); line-height: 1.1; margin-bottom: 24px; }
         .contact-text h3 span { color: var(--green); }
         .contact-text p { font-size: 0.85rem; color: var(--muted); margin-bottom: 32px; line-height: 1.8; }
         .contact-details { display: flex; flex-direction: column; gap: 16px; }
-
-        .contact-item {
-            display: flex; align-items: center; gap: 16px;
-            padding: 20px 24px;
-            border: 1px solid var(--border);
-            background: var(--surface);
-            text-decoration: none;
-            color: var(--text);
-            font-size: 0.82rem;
-            transition: border-color 0.2s, color 0.2s;
-        }
-
-        .contact-item:hover { border-color: var(--green); color: var(--green); }
+        .contact-item { display: flex; align-items: center; gap: 16px; padding: 20px 24px; border: 1px solid var(--border); background: var(--surface); text-decoration: none; color: var(--text); font-size: 0.82rem; transition: all 0.25s; }
+        .contact-item:hover { border-color: var(--green); color: var(--green); transform: translateX(6px); box-shadow: -3px 0 0 var(--green); }
         .contact-item-icon { color: var(--green); font-size: 0.8rem; width: 20px; }
-
-        .contact-item-label {
-            font-size: 0.65rem;
-            color: var(--muted);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            display: block;
-            margin-bottom: 2px;
-        }
-
-        footer {
-            border-top: 1px solid var(--border);
-            padding: 32px 48px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.72rem;
-            color: var(--muted);
-        }
-
-        .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
-        .fade-in.visible { opacity: 1; transform: translateY(0); }
-
-        /* ================================
-           TABLET — 768px
-        ================================ */
+        .contact-item-label { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; display: block; margin-bottom: 2px; }
+        footer { border-top: 1px solid var(--border); padding: 32px 48px; display: flex; justify-content: space-between; align-items: center; font-size: 0.72rem; color: var(--muted); position: relative; z-index: 1; }
         @media (max-width: 768px) {
-            nav { padding: 16px 24px; }
-            .nav-links { display: none; }
-            .hamburger { display: flex; }
-
-            .hero { padding: 100px 24px 60px; }
-            section { padding: 60px 24px; }
-            h1 { font-size: clamp(2.5rem, 10vw, 4rem); }
-            .hero-desc { font-size: 0.82rem; }
-            .hero-links { gap: 10px; }
-            .btn { padding: 10px 18px; font-size: 0.7rem; }
-
+            nav { padding: 16px 24px; } .nav-links { display: none; } .hamburger { display: flex; }
+            .hero { padding: 100px 24px 60px; } section { padding: 60px 24px; }
+            h1 { font-size: clamp(2.5rem, 10vw, 4rem); } .hero-desc { font-size: 0.82rem; }
+            .hero-links { gap: 10px; } .btn { padding: 10px 18px; font-size: 0.7rem; }
             .about-grid { grid-template-columns: 1fr; gap: 40px; }
-
             .exp-item { grid-template-columns: 1fr; }
             .exp-date { border-right: none; border-bottom: 1px solid var(--border); padding: 16px 24px; }
-
-            .skills-output { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
-            .terminal-body { padding: 20px; }
-
-            .project-card { grid-template-columns: 1fr; }
-            .project-info { border-right: none; border-bottom: 1px solid var(--border); padding: 28px; }
-            .project-phases { padding: 28px; }
-
-            .contact-wrap { grid-template-columns: 1fr; gap: 40px; }
-            .contact-text h3 { font-size: 1.8rem; }
-
+            .skills-output { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); } .terminal-body { padding: 20px; }
+            .project-card { grid-template-columns: 1fr; } .project-info { border-right: none; border-bottom: 1px solid var(--border); padding: 28px; } .project-phases { padding: 28px; }
+            .contact-wrap { grid-template-columns: 1fr; gap: 40px; } .contact-text h3 { font-size: 1.8rem; }
             footer { flex-direction: column; gap: 12px; text-align: center; padding: 24px; }
         }
-
-        /* ================================
-           MOBILE — 480px
-        ================================ */
         @media (max-width: 480px) {
-            nav { padding: 14px 16px; }
-            .hero { padding: 90px 16px 50px; }
-            section { padding: 48px 16px; }
-
+            nav { padding: 14px 16px; } .hero { padding: 90px 16px 50px; } section { padding: 48px 16px; }
             h1 { font-size: clamp(2rem, 12vw, 3rem); margin-bottom: 20px; }
-            .hero-label { font-size: 0.65rem; margin-bottom: 20px; }
-            .hero-desc { font-size: 0.78rem; margin-bottom: 32px; }
-            .hero-links { flex-direction: column; gap: 10px; }
-            .btn { justify-content: center; width: 100%; }
-
-            .section-title { font-size: 1.5rem; }
-            .section-header { margin-bottom: 36px; }
-
-            .about-stats { grid-template-columns: 1fr 1fr; }
-            .stat { padding: 20px 16px; }
-            .stat-value { font-size: 1.8rem; }
-
-            .exp-content { padding: 20px 16px; }
-            .exp-title { font-size: 0.9rem; }
-
-            .skills-output { grid-template-columns: 1fr 1fr; }
-            .skill-item { font-size: 0.7rem; padding: 8px 10px; }
-
-            .project-info { padding: 20px 16px; }
-            .project-phases { padding: 20px 16px; gap: 10px; }
-            .project-title { font-size: 1.2rem; }
+            .hero-label { font-size: 0.65rem; margin-bottom: 20px; } .hero-desc { font-size: 0.78rem; margin-bottom: 32px; }
+            .hero-links { flex-direction: column; gap: 10px; } .btn { justify-content: center; width: 100%; }
+            .section-title { font-size: 1.5rem; } .section-header { margin-bottom: 36px; }
+            .about-stats { grid-template-columns: 1fr 1fr; } .stat { padding: 20px 16px; } .stat-value { font-size: 1.8rem; }
+            .exp-content { padding: 20px 16px; } .exp-title { font-size: 0.9rem; }
+            .skills-output { grid-template-columns: 1fr 1fr; } .skill-item { font-size: 0.7rem; padding: 8px 10px; }
+            .project-info { padding: 20px 16px; } .project-phases { padding: 20px 16px; gap: 10px; } .project-title { font-size: 1.2rem; }
             .project-links { flex-direction: column; gap: 12px; }
-
-            .contact-text h3 { font-size: 1.5rem; }
-            .contact-item { padding: 16px; font-size: 0.75rem; }
-
+            .contact-text h3 { font-size: 1.5rem; } .contact-item { padding: 16px; font-size: 0.75rem; }
             footer { padding: 20px 16px; font-size: 0.65rem; }
         }
     </style>
 </head>
 <body>
-
-    <nav>
+    <canvas id="particles"></canvas>
+    <nav id="navbar">
         <a href="#" class="nav-logo">JD_</a>
         <ul class="nav-links">
             <li><a href="#about">About</a></li>
@@ -552,7 +170,6 @@
             <span></span><span></span><span></span>
         </button>
     </nav>
-
     <div class="mobile-menu" id="mobileMenu">
         <a href="#about" class="mobile-link">About</a>
         <a href="#experience" class="mobile-link">Experience</a>
@@ -560,7 +177,6 @@
         <a href="#projects" class="mobile-link">Projects</a>
         <a href="#contact" class="mobile-link">Contact</a>
     </div>
-
     <div class="hero">
         <div class="hero-bg"></div>
         <div class="hero-content">
@@ -568,7 +184,7 @@
             <h1>Julien<br><span>Devester</span></h1>
             <p class="hero-desc">
                 Junior DevOps Engineer building production-grade infrastructure.<br>
-                CI/CD · Kubernetes · IaC · Monitoring<span class="cursor"></span>
+                <span id="typing"></span><span class="cursor"></span>
             </p>
             <div class="hero-links">
                 <a href="mailto:juliendevesterpro@gmail.com" class="btn btn-primary">Get in touch</a>
@@ -578,187 +194,117 @@
             </div>
         </div>
     </div>
-
     <section id="about">
-        <div class="section-header fade-in">
+        <div class="section-header reveal">
             <span class="section-num">01 /</span>
             <h2 class="section-title">About</h2>
             <div class="section-line"></div>
         </div>
-        <div class="about-grid fade-in">
-            <div class="about-text">
+        <div class="about-grid">
+            <div class="about-text reveal reveal-delay-1">
                 <p>Junior DevOps Engineer completing a security-oriented programme at Technifutur (Liège, Belgium), self-studying a complete DevOps stack through KodeKloud while building real production infrastructure.</p>
                 <p>Background in graphic design and game development — I bring both creative precision and engineering rigour to every system I build.</p>
                 <p>Open to DevOps Engineer positions in Belgium, Switzerland, Netherlands, Luxembourg, or full remote. Fast learner, autonomous, obsessed with automation. Available now.</p>
             </div>
-            <div class="about-stats">
-                <div class="stat">
-                    <div class="stat-value">1</div>
-                    <div class="stat-label">Live project</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-value">B2</div>
-                    <div class="stat-label">English level</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-value">0</div>
-                    <div class="stat-label">Downtime tolerance</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-value">∞</div>
-                    <div class="stat-label">Curiosity</div>
-                </div>
+            <div class="about-stats reveal reveal-delay-2">
+                <div class="stat"><div class="stat-value" data-count="1">0</div><div class="stat-label">Live project</div></div>
+                <div class="stat"><div class="stat-value">B2</div><div class="stat-label">English level</div></div>
+                <div class="stat"><div class="stat-value" data-count="0">0</div><div class="stat-label">Downtime tolerance</div></div>
+                <div class="stat"><div class="stat-value">∞</div><div class="stat-label">Curiosity</div></div>
             </div>
         </div>
     </section>
-
     <section id="experience">
-        <div class="section-header fade-in">
+        <div class="section-header reveal">
             <span class="section-num">02 /</span>
             <h2 class="section-title">Experience</h2>
             <div class="section-line"></div>
         </div>
-        <div class="experience-list fade-in">
-            <div class="exp-item">
+        <div class="experience-list">
+            <div class="exp-item reveal reveal-delay-1">
                 <div class="exp-date"><span>Project</span>2026 – Present</div>
                 <div class="exp-content">
                     <div class="exp-title">DevOps Fullstack Lab</div>
                     <div class="exp-org">Personal Project — juliendvstr.dev</div>
                     <div class="exp-desc">Designed and deployed a full DevOps stack on DigitalOcean (Ubuntu 24.04, Frankfurt). CI/CD pipeline via GitHub Actions: automated build, push and deploy to Kubernetes on each push to main. K3s cluster with 2 replicas, rolling updates and self-healing. Full IaC with Terraform + Ansible. Monitoring with Prometheus + Grafana deployed in-cluster.</div>
-                    <div class="exp-tags">
-                        <span class="exp-tag">Docker</span>
-                        <span class="exp-tag">Kubernetes (k3s)</span>
-                        <span class="exp-tag">GitHub Actions</span>
-                        <span class="exp-tag">Terraform</span>
-                        <span class="exp-tag">Ansible</span>
-                        <span class="exp-tag">Prometheus</span>
-                        <span class="exp-tag">Grafana</span>
-                        <span class="exp-tag">Nginx</span>
-                        <span class="exp-tag">DigitalOcean</span>
-                    </div>
+                    <div class="exp-tags"><span class="exp-tag">Docker</span><span class="exp-tag">Kubernetes (k3s)</span><span class="exp-tag">GitHub Actions</span><span class="exp-tag">Terraform</span><span class="exp-tag">Ansible</span><span class="exp-tag">Prometheus</span><span class="exp-tag">Grafana</span><span class="exp-tag">Nginx</span><span class="exp-tag">DigitalOcean</span></div>
                 </div>
             </div>
-            <div class="exp-item">
+            <div class="exp-item reveal reveal-delay-2">
                 <div class="exp-date"><span>Training</span>2025 – 2026</div>
                 <div class="exp-content">
                     <div class="exp-title">Infrastructure Automation — Ansible</div>
                     <div class="exp-org">Technifutur, Liège</div>
                     <div class="exp-desc">Wrote Ansible playbooks to automate VM provisioning and server configuration (Apache, system administration). Managed multi-service environments through infrastructure-as-code practices.</div>
-                    <div class="exp-tags">
-                        <span class="exp-tag">Ansible</span>
-                        <span class="exp-tag">Linux</span>
-                        <span class="exp-tag">Apache</span>
-                    </div>
+                    <div class="exp-tags"><span class="exp-tag">Ansible</span><span class="exp-tag">Linux</span><span class="exp-tag">Apache</span></div>
                 </div>
             </div>
-            <div class="exp-item">
+            <div class="exp-item reveal reveal-delay-3">
                 <div class="exp-date"><span>Training</span>2025 – 2026</div>
                 <div class="exp-content">
                     <div class="exp-title">System Administration & Virtualisation Lab</div>
                     <div class="exp-org">Technifutur, Liège</div>
                     <div class="exp-desc">Deployed and administered servers (Apache, SQL, Windows Server) across KVM, VirtualBox and Hyper-V environments. Full sysadmin scope: networking, services, storage and OS configuration.</div>
-                    <div class="exp-tags">
-                        <span class="exp-tag">KVM</span>
-                        <span class="exp-tag">Hyper-V</span>
-                        <span class="exp-tag">VirtualBox</span>
-                        <span class="exp-tag">Linux</span>
-                        <span class="exp-tag">Windows Server</span>
-                    </div>
+                    <div class="exp-tags"><span class="exp-tag">KVM</span><span class="exp-tag">Hyper-V</span><span class="exp-tag">VirtualBox</span><span class="exp-tag">Linux</span><span class="exp-tag">Windows Server</span></div>
                 </div>
             </div>
-            <div class="exp-item">
+            <div class="exp-item reveal">
                 <div class="exp-date"><span>Freelance</span>2017 – 2019</div>
                 <div class="exp-content">
                     <div class="exp-title">Video Game Developer</div>
                     <div class="exp-org">Collaborative Freelance Project</div>
                     <div class="exp-desc">Team-based video game development with Git version control, task coordination and asset pipeline management.</div>
-                    <div class="exp-tags">
-                        <span class="exp-tag">Unity</span>
-                        <span class="exp-tag">Git</span>
-                        <span class="exp-tag">Blender</span>
-                        <span class="exp-tag">Photoshop</span>
-                    </div>
+                    <div class="exp-tags"><span class="exp-tag">Unity</span><span class="exp-tag">Git</span><span class="exp-tag">Blender</span><span class="exp-tag">Photoshop</span></div>
                 </div>
             </div>
-            <div class="exp-item">
+            <div class="exp-item reveal">
                 <div class="exp-date"><span>Freelance</span>2016 – 2020</div>
                 <div class="exp-content">
                     <div class="exp-title">Graphic Designer</div>
                     <div class="exp-org">Freelance</div>
                     <div class="exp-desc">Delivered visuals (thumbnails, banners, brand identity) for multiple content creators. Autonomous project management and client communication under tight deadlines.</div>
-                    <div class="exp-tags">
-                        <span class="exp-tag">Blender</span>
-                        <span class="exp-tag">Cinema 4D</span>
-                        <span class="exp-tag">Photoshop</span>
-                    </div>
+                    <div class="exp-tags"><span class="exp-tag">Blender</span><span class="exp-tag">Cinema 4D</span><span class="exp-tag">Photoshop</span></div>
                 </div>
             </div>
         </div>
     </section>
-
     <section id="skills">
-        <div class="section-header fade-in">
+        <div class="section-header reveal">
             <span class="section-num">03 /</span>
             <h2 class="section-title">Skills</h2>
             <div class="section-line"></div>
         </div>
-        <div class="skills-terminal fade-in">
+        <div class="skills-terminal reveal">
             <div class="terminal-bar">
-                <div class="dot dot-red"></div>
-                <div class="dot dot-yellow"></div>
-                <div class="dot dot-green"></div>
+                <div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div>
                 <span class="terminal-title">julien@devops ~ skills --list</span>
             </div>
             <div class="terminal-body">
-                <div class="cmd-line">
-                    <span class="cmd-prompt">$</span>
-                    <span class="cmd-text">cat technical_stack.txt</span>
-                </div>
+                <div class="cmd-line"><span class="cmd-prompt">$</span><span class="cmd-text">cat technical_stack.txt</span></div>
                 <div class="skills-output">
-                    <div class="skill-item">Docker</div>
-                    <div class="skill-item">Kubernetes</div>
-                    <div class="skill-item">GitHub Actions</div>
-                    <div class="skill-item">Jenkins</div>
-                    <div class="skill-item">GitLab CI/CD</div>
-                    <div class="skill-item">Terraform</div>
-                    <div class="skill-item">Ansible</div>
-                    <div class="skill-item">Prometheus</div>
-                    <div class="skill-item">Grafana</div>
-                    <div class="skill-item">Linux</div>
-                    <div class="skill-item">Bash / Shell</div>
-                    <div class="skill-item">Python</div>
-                    <div class="skill-item">Nginx</div>
-                    <div class="skill-item">Traefik</div>
-                    <div class="skill-item">Git</div>
-                    <div class="skill-item">Azure</div>
-                    <div class="skill-item">DigitalOcean</div>
-                    <div class="skill-item">TCP/IP · DNS</div>
+                    <div class="skill-item">Docker</div><div class="skill-item">Kubernetes</div><div class="skill-item">GitHub Actions</div>
+                    <div class="skill-item">Jenkins</div><div class="skill-item">GitLab CI/CD</div><div class="skill-item">Terraform</div>
+                    <div class="skill-item">Ansible</div><div class="skill-item">Prometheus</div><div class="skill-item">Grafana</div>
+                    <div class="skill-item">Linux</div><div class="skill-item">Bash / Shell</div><div class="skill-item">Python</div>
+                    <div class="skill-item">Nginx</div><div class="skill-item">Traefik</div><div class="skill-item">Git</div>
+                    <div class="skill-item">Azure</div><div class="skill-item">DigitalOcean</div><div class="skill-item">TCP/IP · DNS</div>
                 </div>
             </div>
         </div>
     </section>
-
     <section id="projects">
-        <div class="section-header fade-in">
+        <div class="section-header reveal">
             <span class="section-num">04 /</span>
             <h2 class="section-title">Projects</h2>
             <div class="section-line"></div>
         </div>
-        <div class="project-card fade-in">
+        <div class="project-card reveal">
             <div class="project-info">
                 <span class="project-badge">Production</span>
                 <h3 class="project-title">DevOps Fullstack Lab</h3>
                 <p class="project-desc">End-to-end DevOps infrastructure — from CI/CD pipeline to Kubernetes orchestration, Infrastructure as Code, and real-time monitoring. Deployed on DigitalOcean Frankfurt. Accessible at juliendvstr.dev via Cloudflare + Traefik ingress.</p>
                 <div class="project-tags">
-                    <span class="tag">Docker</span>
-                    <span class="tag">GitHub Actions</span>
-                    <span class="tag">Kubernetes</span>
-                    <span class="tag">Terraform</span>
-                    <span class="tag">Ansible</span>
-                    <span class="tag">Prometheus</span>
-                    <span class="tag">Grafana</span>
-                    <span class="tag">Traefik</span>
-                    <span class="tag">Cloudflare</span>
+                    <span class="tag">Docker</span><span class="tag">GitHub Actions</span><span class="tag">Kubernetes</span><span class="tag">Terraform</span><span class="tag">Ansible</span><span class="tag">Prometheus</span><span class="tag">Grafana</span><span class="tag">Traefik</span><span class="tag">Cloudflare</span>
                 </div>
                 <div class="project-links">
                     <a href="https://github.com/Julien-Dvstr/Devops-FullStack-Lab" target="_blank" class="project-link">GitHub →</a>
@@ -776,74 +322,106 @@
             </div>
         </div>
     </section>
-
     <section id="contact">
-        <div class="section-header fade-in">
+        <div class="section-header reveal">
             <span class="section-num">05 /</span>
             <h2 class="section-title">Contact</h2>
             <div class="section-line"></div>
         </div>
-        <div class="contact-wrap fade-in">
-            <div class="contact-text">
+        <div class="contact-wrap">
+            <div class="contact-text reveal reveal-delay-1">
                 <h3>Let's build<br><span>something.</span></h3>
                 <p>Open to DevOps Engineer positions in Belgium, Switzerland, Netherlands, Luxembourg, or full remote. Available now.</p>
             </div>
-            <div class="contact-details">
+            <div class="contact-details reveal reveal-delay-2">
                 <a href="mailto:juliendevesterpro@gmail.com" class="contact-item">
                     <span class="contact-item-icon">@</span>
-                    <div>
-                        <span class="contact-item-label">Email</span>
-                        juliendevesterpro@gmail.com
-                    </div>
+                    <div><span class="contact-item-label">Email</span>juliendevesterpro@gmail.com</div>
                 </a>
                 <a href="https://linkedin.com/in/juliendevester" target="_blank" class="contact-item">
                     <span class="contact-item-icon">in</span>
-                    <div>
-                        <span class="contact-item-label">LinkedIn</span>
-                        juliendevester
-                    </div>
+                    <div><span class="contact-item-label">LinkedIn</span>juliendevester</div>
                 </a>
                 <a href="https://github.com/Julien-Dvstr" target="_blank" class="contact-item">
                     <span class="contact-item-icon">gh</span>
-                    <div>
-                        <span class="contact-item-label">GitHub</span>
-                        Julien-Dvstr
-                    </div>
+                    <div><span class="contact-item-label">GitHub</span>Julien-Dvstr</div>
                 </a>
             </div>
         </div>
     </section>
-
     <footer>
         <span>Julien Devester © 2026</span>
         <span>Deployed via Docker · GitHub Actions · Kubernetes · DigitalOcean</span>
     </footer>
-
     <script>
-        const hamburger = document.getElementById('hamburger');
-        const mobileMenu = document.getElementById('mobileMenu');
-
-        hamburger.addEventListener('click', () => {
-            hamburger.classList.toggle('open');
-            mobileMenu.classList.toggle('open');
-            document.body.style.overflow = mobileMenu.classList.contains('open') ? 'hidden' : '';
+    // PARTICLES
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    let W = canvas.width = window.innerWidth;
+    let H = canvas.height = window.innerHeight;
+    window.addEventListener('resize', () => { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; });
+    const pts = Array.from({length: 55}, () => ({
+        x: Math.random()*W, y: Math.random()*H,
+        vx: (Math.random()-.5)*.3, vy: (Math.random()-.5)*.3,
+        r: Math.random()*1.2+.4,
+        op: Math.random()*.35+.08,
+        c: Math.random()>.7?'0,200,224':'0,229,160'
+    }));
+    function drawPts() {
+        ctx.clearRect(0,0,W,H);
+        pts.forEach(p => {
+            p.x+=p.vx; p.y+=p.vy;
+            if(p.x<0||p.x>W) p.vx*=-1;
+            if(p.y<0||p.y>H) p.vy*=-1;
+            ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+            ctx.fillStyle=`rgba(${p.c},${p.op})`; ctx.fill();
         });
+        pts.forEach((a,i) => pts.slice(i+1).forEach(b => {
+            const d=Math.hypot(a.x-b.x,a.y-b.y);
+            if(d<110){ ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y);
+            ctx.strokeStyle=`rgba(0,229,160,${.06*(1-d/110)})`; ctx.lineWidth=.5; ctx.stroke(); }
+        }));
+        requestAnimationFrame(drawPts);
+    }
+    drawPts();
 
-        document.querySelectorAll('.mobile-link').forEach(link => {
-            link.addEventListener('click', () => {
-                hamburger.classList.remove('open');
-                mobileMenu.classList.remove('open');
-                document.body.style.overflow = '';
-            });
+    // TYPING
+    const typEl = document.getElementById('typing');
+    const phrases = ['CI/CD · Kubernetes · IaC · Monitoring','Docker · Terraform · Ansible · Grafana','Available now · Open to opportunities'];
+    let pi=0, ci=0, del=false;
+    function type() {
+        const cur=phrases[pi];
+        if(!del){ typEl.textContent=cur.slice(0,++ci); if(ci===cur.length){del=true;setTimeout(type,2000);return;} }
+        else { typEl.textContent=cur.slice(0,--ci); if(ci===0){del=false;pi=(pi+1)%phrases.length;} }
+        setTimeout(type, del?40:70);
+    }
+    setTimeout(type, 1400);
+
+    // NAV SCROLL
+    window.addEventListener('scroll',()=>document.getElementById('navbar').classList.toggle('scrolled',scrollY>50));
+
+    // SCROLL REVEAL + COUNTERS
+    function animCounter(el) {
+        if(el._done) return; el._done=true;
+        const target=+el.dataset.count, dur=1200, t0=performance.now();
+        function upd(now){ const p=Math.min((now-t0)/dur,1), e=1-Math.pow(1-p,3);
+            el.textContent=Math.round(e*target); if(p<1) requestAnimationFrame(upd); }
+        requestAnimationFrame(upd);
+    }
+    const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+            if(e.isIntersecting){
+                e.target.classList.add('visible');
+                e.target.querySelectorAll('[data-count]').forEach(animCounter);
+            }
         });
+    }, {threshold:0.12});
+    document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
 
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) entry.target.classList.add('visible');
-            });
-        }, { threshold: 0.1 });
-
-        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    // HAMBURGER
+    const hb=document.getElementById('hamburger'), mm=document.getElementById('mobileMenu');
+    hb.addEventListener('click',()=>{ hb.classList.toggle('open'); mm.classList.toggle('open'); document.body.style.overflow=mm.classList.contains('open')?'hidden':''; });
+    document.querySelectorAll('.mobile-link').forEach(l=>l.addEventListener('click',()=>{ hb.classList.remove('open'); mm.classList.remove('open'); document.body.style.overflow=''; }));
     </script>
 </body>
 </html>
